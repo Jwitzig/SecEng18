@@ -4,15 +4,16 @@ begin abstract-base-policy DRBAC_IBAC:
     end inheritance;
 
     begin components:
-		set R;               //Rolle
-    set E;               //Prüfung
+		set R;               //Rollen
+   		set E;               //Prüfungen
 		set O;               //Object
 		set OP;              //Operation
 		relation PA(OP, O, R);
 		set U;               //Users
 		set S;               //Sessions
-    set B;               //Berechtigung
-    relation m(U,E,B)
+    		set B;               //Berechtigung
+
+    		relation m(U,E,B)
 		relation UA(U, R);
 		mapping user( S : U );
 		mapping roles( S : 2^R );
@@ -22,26 +23,20 @@ begin abstract-base-policy DRBAC_IBAC:
         f_drbac(U u1, O o1, OP op1):
             exists s1 in S: (
             	u1 == user(s1) and
-				exists r1 in roles(s1): [op1, o1, r1] in PA
-			);
+		exists r1 in roles(s1): [op1, o1, r1] in PA
+		);
 
         f_ibac(U u1, O o1, B b1):
           exists s1 in S: (
             u1 == user(s1) and
-        exists [u1,o1,b1] in m
+            exists [u1,o1,b1] in m
       );
 
         has_role(U u1, R r1):
             [u1, r1] in UA;
 
-//        has_not_role(U u1, R r1):
-//            [u1, r1] not in UA;
-
         has_right(B b1, S s1, O o1):
             [s1,o1,b1] in m;
-
-  //      has_not_right(B b1, S s1, O o1):
-  //          [s1,o1,b1] not in m;
 
         owns_session(U u1, S s1):
         	u1 == user(s1);
@@ -52,7 +47,7 @@ begin abstract-base-policy DRBAC_IBAC:
            U = U + { u1 };
        end;
 
-       begin destroy_user(U u1):
+       begin delete_user(U u1):
            U = U - { u1 };
        end;
 
@@ -60,16 +55,12 @@ begin abstract-base-policy DRBAC_IBAC:
            UA = UA + { [u1, r1] };
        end;
 
-       begin revoke_role_from_user(U u1, R r1):
-           UA = UA - { [u1, r1] };
-       end;
-
        begin create_session(S s1, U u1):
            S = S + { s1 };
            user = user + { (s1 : u1) };
        end;
 
-       begin destroy_session(S s1, U u1):
+       begin delete_session(S s1, U u1):
            S = S - { s1 };
            user = user - { (s1) };
            roles = roles - { (s1) };
