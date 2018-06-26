@@ -1,0 +1,76 @@
+begin abstract-base-policy DRBAC_0:
+
+    begin inheritance:
+    end inheritance;
+
+    begin components:
+		set R;
+		set O;
+		set OP;
+		relation PA(OP, O, R);
+		set U;
+		set S;
+		relation UA(U, R);
+		mapping user( S : U );
+		mapping roles( S : 2^R );
+    end components;
+
+    begin conditions:
+        f_drbac(OP op1, U u1, O o1):
+            exists s1 in S: (
+            	u1 == user(s1) and
+				exists r1 in roles(s1): [op1, o1, r1] in PA
+			);
+            
+        has_role(U u1, R r1):
+            [u1, r1] in UA;
+            
+        has_not_role(U u1, R r1):
+            [u1, r1] not in UA;
+            
+        owns_session(U u1, S s1):
+        	u1 == user(s1);
+    end conditions;
+        
+    begin primitives:
+       begin create_user(U u1):
+           U = U + { u1 };
+       end;
+
+       begin destroy_user(U u1):
+           U = U - { u1 };
+       end;
+
+       begin assign_role_to_user(U u1, R r1):
+           UA = UA + { [u1, r1] };
+       end;
+       
+       begin revoke_role_from_user(U u1, R r1):
+           UA = UA - { [u1, r1] };
+       end;
+
+       begin create_session(S s1, U u1):
+           S = S + { s1 };
+           user = user + { (s1 : u1) };
+       end;
+
+       begin destroy_session(S s1, U u1):
+           S = S - { s1 };
+           user = user - { (s1) };
+           roles = roles - { (s1) };
+       end;
+       
+       begin activate_role(S s1, R r1):
+           rs = roles(s1);
+           rs = rs + { r1 };
+           roles = roles + { (s1 : rs) };
+       end;
+       
+       begin deactivate_role(S s1, R r1):
+           rs = roles(s1);
+           rs = rs - { r1 };
+           roles = roles + { (s1 : rs ) };
+       end;
+    end primitives;
+
+end abstract-base-policy;

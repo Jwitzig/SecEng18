@@ -1,0 +1,96 @@
+begin policy open_university : DRBAC_0 :
+
+    state-space: { ... ??? ... };
+
+    input-vector:  { ... ??? ... };
+
+    begin authorisation-scheme:
+
+    	createStudent(U u_caller, U u_student):
+    		condition:
+    			f_drbac('manage', u_caller, 'student_db') and
+          f_ibac('write', u_caller, 'student_db')
+    		begin body:
+    			create_user(u_student);
+    			assign_role_to_user(u_student, ???);
+          create_subject(u_student);
+          create_object(o_prdata);
+          enter_right('write', u_student, o_prdata);
+          enter_right('read', u_student, o_prdata);
+    			... ??? ...
+    		end body;
+
+    	delete_student(U caller, U student):
+    		condition:
+    			f_drbac(caller, 'Nutzerkatalog', 'delete_student')
+
+        begin body:
+    			delete_user(student);
+
+    		end body;
+
+    	login(U u_caller, R r_toActivate, S s_newSession):
+    		condition:
+    			has_role(u_caller, r_toActivate);
+    		begin body:
+    			create_session(s_newSession, u_caller);
+    			activate_role(s_newSession, r_toActivate);
+    		end body;
+
+    	logout(U u_caller, S s_oldSession):
+    		begin body:
+    			destroy_session(s_oldSession, u_caller);
+    		end body;
+
+		... ??? ...
+
+		fileSolution(... ??? ...):
+    		condition:
+    			... ??? ...
+    		begin body:
+    			... ??? ...
+    			assign_role_to_user(... ??? ...);
+    		end body;
+
+		accessSample(... ??? ...):
+    		condition:
+    			... ??? ...
+    		begin body:
+    			... ??? ...
+    			revoke_role_from_user(... ??? ...);
+    		end body;
+    end authorisation-scheme;
+
+    begin initial-state:
+        U = { ... ??? ..., 'Simon' };
+
+        S = { 's1' };
+
+        UA = { 	['Simon', 'administrator'],
+        		... ??? ... };
+
+        user = { ('s1'	: 	'Simon') };
+
+        roles = { ('s1':	{ 'administrator' }) };
+    end initial-state;
+
+    begin extension-vector:
+        B = { 'write', 'read', 'angemeldet' }
+
+        R = { 'student', 'pruefer', 'PAM', 'administrator' };
+
+        O = { 'Nutzerkatalog', 'Pruefungskatalog'};
+
+        OP = { 'change_pers_data', 'read_pers_data', 'new_student','delete_student', 'register_for_exam', 'sign_out_exam', 'create_list',
+         'display_mark', 'change_mark', 'login_user', 'logout_user'};
+
+        PA = {
+            //['manage',  'student_db', 	'administrator'],
+            ['PAM', 'Nutzerkatalog', new_student],
+            ['PAM', 'Pruefungskatalog', register_for_exam],
+
+            ... ??? ...
+        };
+    end extension-vector;
+
+end policy;

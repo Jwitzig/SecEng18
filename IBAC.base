@@ -1,0 +1,56 @@
+begin abstract-base-policy IBAC:
+
+    begin inheritance:
+    end inheritance;
+
+    begin components:
+		set S;
+    set O;
+    set B;
+    relation m(S,O,B)
+
+    end components;
+
+    begin conditions:
+        f_ibac(B b1, S s1, O o1):
+            exists s1 in S: (
+            	u1 == user(s1) and
+				exists [s1,o1,b1] in m
+			);
+
+        has_right(B b1, S s1, O o1):
+            [s1,o1,b1] in m;
+
+        has_not_right(B b1, S s1, O o1):
+            [s1,o1,b1] not in m;
+
+    end conditions;
+
+    begin primitives:
+       begin enter_right(B b1, S s1, O o1):
+           m = m + { (s1,o1,b1) };
+       end;
+
+       begin revoke_right(B b1, S s1, O o1):
+           m(s1,o1) = m(s1,01) - { b1 };
+       end;
+
+       begin create_subject(S s1):
+           S = S + { s1 };
+       end;
+
+       begin delete_subject(S s1):
+           S = S - { s1 };
+       end;
+
+       begin create_object(O o1):
+           O = O + { o1 };
+       end;
+
+       begin delete_object(O o1):
+           O = O - { o1 };
+       end;
+
+    end primitives;
+
+end abstract-base-policy;
