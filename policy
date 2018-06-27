@@ -89,7 +89,7 @@ begin policy open_university : DRBAC_0 :
 
 
 
-	enter_mark(U caller, U student, O exam):
+	enter_mark(U caller, U student, E exam):
 		condition: 
 			f_drbac(caller, 'Pruefungskatalog', 'enter_mark') and
 			f_ibac(caller, exam, 'write')	and 
