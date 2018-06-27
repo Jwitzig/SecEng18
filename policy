@@ -1,65 +1,128 @@
 begin policy open_university : DRBAC_0 :
 
-    state-space: { ... ??? ... };
+    state-space: {  U, S, UA, user, roles, m };
 
-    input-vector:  { ... ??? ... };
+    input-vector:  { U, O, S , R };
 
     begin authorisation-scheme:
 
-    	createStudent(U u_caller, U u_student):
+
+    	new_student(U caller, U student):
     		condition:
-    			f_drbac('manage', u_caller, 'student_db') and
-          f_ibac('write', u_caller, 'student_db')
+		f_drbac(caller, 'Nutzerkatalog', 'new_student') 
+
     		begin body:
-    			create_user(u_student);
-    			assign_role_to_user(u_student, ???);
-          create_subject(u_student);
-          create_object(o_prdata);
-          enter_right('write', u_student, o_prdata);
-          enter_right('read', u_student, o_prdata);
-    			... ??? ...
+    			create_user(student);
+    			assign_role_to_user(student, 'student');
+			enter_right('write', student);
+        	 	enter_right('read', student);
     		end body;
+
 
     	delete_student(U caller, U student):
     		condition:
     			f_drbac(caller, 'Nutzerkatalog', 'delete_student')
 
-        begin body:
+        	begin body:
     			delete_user(student);
+	  	end body;
 
-    		end body;
 
-    	login(U u_caller, R r_toActivate, S s_newSession):
+
+
+
+	change_pers_data():
     		condition:
-    			has_role(u_caller, r_toActivate);
-    		begin body:
-    			create_session(s_newSession, u_caller);
-    			activate_role(s_newSession, r_toActivate);
-    		end body;
+    			f_drbac(caller, 'Nutzerkatalog', 'change_pers_data') and 
+			
 
-    	logout(U u_caller, S s_oldSession):
-    		begin body:
-    			destroy_session(s_oldSession, u_caller);
-    		end body;
+        	begin body:
+    
+	  	end body;
 
-		... ??? ...
 
-		fileSolution(... ??? ...):
-    		condition:
-    			... ??? ...
-    		begin body:
-    			... ??? ...
-    			assign_role_to_user(... ??? ...);
-    		end body;
+	read_pers_date():
+		condition: 
 
-		accessSample(... ??? ...):
-    		condition:
-    			... ??? ...
-    		begin body:
-    			... ??? ...
-    			revoke_role_from_user(... ??? ...);
-    		end body;
-    end authorisation-scheme;
+		begin body: 
+		end body: 
+
+
+
+	register_for_exam(U caller, U student, E p, U pruefer)):
+		condition: 
+			f_drbac(caller, 'Pruefungskatalog', 'register_for_exam') and
+        		f_ibac(caller, student, 'write')
+
+		begin body: 
+			enter_right('angemeldet', student, p);
+		end body: 
+
+	sign_out_exam(U caller, U student, E p)):
+		condition: 
+			f_drbac(caller, 'Pruefungskatalog', 'register_for_exam') and
+          		f_ibac(caller)
+
+		begin body: 
+			revoke_right('angemeldet', student, p);
+		end body: 
+
+
+
+	create_list():
+		condition: 
+
+		begin body: 
+		end body: 
+
+
+
+	display_mark():
+		condition: 
+
+		begin body: 
+		end body: 
+
+
+
+	enter_mark(U caller, U student, O exam):
+		condition: 
+			f_drbac(caller, 'Pruefungskatalog', 'enter_mark') and
+			f_ibac(caller, exam, 'write')	and 
+			f_ibac(student, exam, 'angemeldet')	and 
+			has_role(caller, 'PAM') 
+
+		begin body: 
+			revoke_right('angemeldet', student, exam)
+		end body: 
+
+
+
+	change_mark(U caller):
+		condition: 
+			f_drbac(caller, 'Pruefungskatalog', 'change_mark')
+
+		begin body: 
+		end body: 
+
+
+
+	logout_user():
+		condition: 
+
+		begin body: 
+		end body: 
+
+
+
+	login_user():
+		condition: 
+
+		begin body: 
+		end body: 
+
+
+ end authorisation-scheme;
 
     begin initial-state:
         U = { ... ??? ..., 'Simon' };
@@ -84,12 +147,46 @@ begin policy open_university : DRBAC_0 :
         OP = { 'change_pers_data', 'read_pers_data', 'new_student','delete_student', 'register_for_exam', 'sign_out_exam', 'create_list',
          'display_mark', 'change_mark', 'login_user', 'logout_user'};
 
-        PA = {
+         PA = {
             //['manage',  'student_db', 	'administrator'],
             ['PAM', 'Nutzerkatalog', new_student],
+            ['PAM', 'Nutzerkatalog', delete_student],
+            ['PAM', 'Nutzerkatalog', change_pers_data],
+            ['PAM', 'Nutzerkatalog', read_pers_data],
             ['PAM', 'Pruefungskatalog', register_for_exam],
+            ['PAM', 'Pruefungskatalog', sign_out_exam],
+            ['PAM', 'Nutzerkatalog', create_list],
+            ['PAM', 'Pruefungskatalog', display_mark],
+            ['PAM', 'Pruefungskatalog', enter_mark],
+            ['PAM', 'Pruefungskatalog', change_mark],
 
-            ... ??? ...
+            ['student', 'Nutzerkatalog', change_pers_data],
+            ['student', 'Nutzerkatalog', read_pers_data],
+            ['student', 'Pruefungskatalog', register_for_exam],
+            ['student', 'Pruefungskatalog', sign_out_exam],
+            ['student', 'Pruefungskatalog', display_mark],
+
+            ['pruefer', 'Nutzerkatalog', change_pers_data],
+            ['pruefer', 'Nutzerkatalog', read_pers_data],
+            ['pruefer', 'Nutzerkatalog', create_list],
+            ['pruefer', 'Pruefungskatalog', display_mark],
+            ['pruefer', 'Pruefungskatalog', enter_mark],
+            ['pruefer', 'Pruefungskatalog', change_mark],
+
+            ['administrator', 'Nutzerkatalog', new_student],
+            ['administrator', 'Nutzerkatalog', delete_student],
+            ['administrator', 'Nutzerkatalog', change_pers_data],
+            ['administrator', 'Nutzerkatalog', read_pers_data],
+            ['administrator', 'Pruefungskatalog', register_for_exam],
+            ['administrator', 'Pruefungskatalog', sign_out_exam],
+            ['administrator', 'Nutzerkatalog', create_list],
+            ['administrator', 'Pruefungskatalog', display_mark],
+            ['administrator', 'Pruefungskatalog', enter_mark],
+            ['administrator', 'Pruefungskatalog', change_mark],
+            ['administrator', 'Nutzerkatalog', login_user],
+            ['administrator', 'Nutzerkatalog', logout_user]
+
+
         };
     end extension-vector;
 
