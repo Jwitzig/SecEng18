@@ -35,8 +35,6 @@ begin policy open_university : DRBAC_0 :
     		condition:
     			f_drbac(caller, 'Nutzerkatalog', 'change_pers_data') and 
 			
-<<<<<<< HEAD
-
         	begin body:
     
 	  	end body;
@@ -71,49 +69,19 @@ begin policy open_university : DRBAC_0 :
 
 
 	create_list():
-=======
-
         	begin body:
     
 	  	end body;
 
 
-	read_pers_date()
+	read_pers_date():
 		condition: 
 
 		begin body: 
 		end body: 
 
 
-
-	register_for_exam()
-		condition: 
-
-		begin body: 
-		end body: 
-
-	sign_out_exam()
-		condition: 
-
-		begin body: 
-		end body: 
-
-
-
-	create_list()
->>>>>>> f1d9c5f0426dd8c58e7bee481d437d1231aa6ad9
-		condition: 
-
-		begin body: 
-		end body: 
-
-
-
-<<<<<<< HEAD
 	display_mark():
-=======
-	display_mark()
->>>>>>> f1d9c5f0426dd8c58e7bee481d437d1231aa6ad9
 		condition: 
 
 		begin body: 
@@ -121,11 +89,7 @@ begin policy open_university : DRBAC_0 :
 
 
 
-<<<<<<< HEAD
 	enter_mark(U caller, U student, O exam):
-=======
-	enter_mark(U caller, U student, O exam)
->>>>>>> f1d9c5f0426dd8c58e7bee481d437d1231aa6ad9
 		condition: 
 			f_drbac(caller, 'Pruefungskatalog', 'enter_mark') and
 			f_ibac(caller, exam, 'write')	and 
@@ -138,11 +102,8 @@ begin policy open_university : DRBAC_0 :
 
 
 
-<<<<<<< HEAD
+
 	change_mark(U caller):
-=======
-	change_mark(U caller)
->>>>>>> f1d9c5f0426dd8c58e7bee481d437d1231aa6ad9
 		condition: 
 			f_drbac(caller, 'Pruefungskatalog', 'change_mark')
 
@@ -150,12 +111,7 @@ begin policy open_university : DRBAC_0 :
 		end body: 
 
 
-
-<<<<<<< HEAD
 	logout_user():
-=======
-	lougout_user()
->>>>>>> f1d9c5f0426dd8c58e7bee481d437d1231aa6ad9
 		condition: 
 
 		begin body: 
@@ -163,11 +119,7 @@ begin policy open_university : DRBAC_0 :
 
 
 
-<<<<<<< HEAD
 	login_user():
-=======
-	login_user()
->>>>>>> f1d9c5f0426dd8c58e7bee481d437d1231aa6ad9
 		condition: 
 
 		begin body: 
@@ -199,12 +151,8 @@ begin policy open_university : DRBAC_0 :
         OP = { 'change_pers_data', 'read_pers_data', 'new_student','delete_student', 'register_for_exam', 'sign_out_exam', 'create_list',
          'display_mark', 'change_mark', 'login_user', 'logout_user'};
 
-<<<<<<< HEAD
          PA = {
             //['manage',  'student_db', 	'administrator'],
-=======
-        PA = {
->>>>>>> f1d9c5f0426dd8c58e7bee481d437d1231aa6ad9
             ['PAM', 'Nutzerkatalog', new_student],
             ['PAM', 'Nutzerkatalog', delete_student],
             ['PAM', 'Nutzerkatalog', change_pers_data],
